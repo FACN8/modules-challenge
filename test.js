@@ -1,5 +1,4 @@
-const handler = require('./server.js').handler;
-const test = require('tape');
+const { handler, server } = require('./server.js');
 
 const endpoints = [
   {url: '/unknown', status_code: 404, body: '404 server error'},
@@ -13,20 +12,20 @@ const endpoints = [
   {url: '/api/repos/dwyl', status_code: 200}
 ];
 
-endpoints.forEach((endpoint) => {
-  test('GET :: ' + endpoint.url + ' :: returns ' + endpoint.status_code, (t) => {
-    t.plan(2);
+afterAll(() => {
+  server.close()
+})
 
+endpoints.forEach((endpoint) => {
+  test('GET :: ' + endpoint.url + ' :: returns ' + endpoint.status_code, (done) => {    
     handler({url: endpoint.url}, {
       writeHead: (status, _content) => {
-        t.equal(status, endpoint.status_code);
+        expect(status).toBe(endpoint.status_code);
       },
       end: (body) => {
-        t.ok(endpoint.body ? body.includes(endpoint.body) : body);
+        expect(endpoint.body ? body.includes(endpoint.body) : body).toBeTruthy();
+        done()
       }
     });
   });
 });
-
-test.onFinish(() => process.exit(0));
-
