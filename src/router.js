@@ -11,9 +11,9 @@ const router = (req, res) => {
         handlers.apiHandler(res, url);
     } else if (url.indexOf('public') !== -1) {
         handlers.fileHandler(res, url);
-    } else {
+    } else {        
       res.writeHead(404, {'content-type': 'text/plain'});
-      res.end('404 error');
+      res.end('404 server error');
     }
   }
 
